@@ -124,7 +124,7 @@
                     </linearGradient>
                   </defs>
                 </svg>
-                <div class="flex justify-around">
+                <div id="month-labels" class="flex justify-around">
                   <p class="text-[#994d51] text-[13px] font-bold leading-normal tracking-[0.015em]">Jan</p>
                   <p class="text-[#994d51] text-[13px] font-bold leading-normal tracking-[0.015em]">Feb</p>
                   <p class="text-[#994d51] text-[13px] font-bold leading-normal tracking-[0.015em]">Mar</p>
@@ -149,13 +149,14 @@
           <div class="flex flex-col gap-3 p-4">
             <div class="flex gap-6 justify-between">
               <p class="text-[#1b0e0e] text-base font-medium leading-normal">Attendance Rate</p>
-              <p class="text-[#1b0e0e] text-sm font-normal leading-normal">92%</p>
+              <p id="attendance-percentage" class="text-[#1b0e0e] text-sm font-normal leading-normal">92%</p>
             </div>
             <div class="rounded bg-[#e7d0d1]">
-              <div class="h-2 rounded bg-[#ea2a33]" style="width: 92%;"></div>
+              <div id="attendance-bar" class="h-2 rounded bg-[#ea2a33]" style="width: 92%;"></div>
             </div>
             <p class="text-[#994d51] text-sm font-normal leading-normal">
-              <input type="number" value="150" class="w-12 text-center text-[#994d51] text-sm font-normal leading-normal bg-transparent border-0 focus:ring-1 focus:ring-inset focus:ring-[#994d51] p-0" /> days present out of <input type="number" value="163" class="w-12 text-center text-[#994d51] text-sm font-normal leading-normal bg-transparent border-0 focus:ring-1 focus:ring-inset focus:ring-[#994d51] p-0" /> total days
+              <input id="days-present" type="number" value="150" class="w-12 text-center text-[#994d51] text-sm font-normal leading-normal bg-transparent border-0 focus:ring-1 focus:ring-inset focus:ring-[#994d51] p-0" /> days present out of
+              <input id="total-days" type="number" value="163" class="w-12 text-center text-[#994d51] text-sm font-normal leading-normal bg-transparent border-0 focus:ring-1 focus:ring-inset focus:ring-[#994d51] p-0" /> total days
             </p>
           </div>
 
@@ -211,5 +212,45 @@
 
     </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // --- Dynamic Attendance Rate ---
+      const daysPresentInput = document.getElementById('days-present');
+      const totalDaysInput = document.getElementById('total-days');
+      const attendancePercentage = document.getElementById('attendance-percentage');
+      const attendanceBar = document.getElementById('attendance-bar');
+
+      function updateAttendance() {
+        const present = parseFloat(daysPresentInput.value) || 0;
+        const total = parseFloat(totalDaysInput.value) || 1; // Avoid division by zero
+        const percentage = total > 0 ? Math.round((present / total) * 100) : 0;
+
+        attendancePercentage.textContent = percentage + '%';
+        attendanceBar.style.width = percentage + '%';
+      }
+
+      daysPresentInput.addEventListener('input', updateAttendance);
+      totalDaysInput.addEventListener('input', updateAttendance);
+
+      // Initial calculation on page load
+      updateAttendance();
+
+      // --- Dynamic Performance Trend Months ---
+      const monthLabelsContainer = document.getElementById('month-labels');
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const currentDate = new Date();
+
+      let labelsHtml = '';
+      for (let i = 5; i >= 0; i--) {
+        const date = new Date();
+        date.setMonth(currentDate.getMonth() - i);
+        const monthName = monthNames[date.getMonth()];
+        labelsHtml += `<p class="text-[#994d51] text-[13px] font-bold leading-normal tracking-[0.015em]">${monthName}</p>`;
+      }
+      monthLabelsContainer.innerHTML = labelsHtml;
+    });
+  </script>
+
 </body>
 </html>
